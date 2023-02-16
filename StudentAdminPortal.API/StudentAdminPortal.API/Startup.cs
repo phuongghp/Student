@@ -44,7 +44,7 @@ namespace StudentAdminPortal.API
             services.AddDbContext<StudentAdminContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("StudenAdminPortalDb")));
             services.AddScoped<IStudentRepository, SqlStudentRepository>();
-            
+            services.AddScoped<IImageRepository, LocalStorageImageRepository>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "StudentAdminPortal.API", Version = "v1" });
