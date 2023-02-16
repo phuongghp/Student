@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using StudentAdminPortal.API.DataModels;
-using StudentAdminPortal.API.Repository;
+using StudentAdminPortal.API.DomainModels;
+using StudentAdminPortal.API.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace StudentAdminPortal.API.Controllers
@@ -15,90 +14,66 @@ namespace StudentAdminPortal.API.Controllers
         private readonly IStudentRepository studentRepository;
         private readonly IMapper mapper;
 
-        public StudentsController(IStudentRepository studentRepository,IMapper mapper)
+        public StudentsController(IStudentRepository studentRepository, IMapper mapper)
         {
             this.studentRepository = studentRepository;
             this.mapper = mapper;
         }
+
         [HttpGet]
         [Route("[controller]")]
-        public async Task<IActionResult> GetAllStudents()
+        public async Task<IActionResult> GetAllStudentsAsync()
         {
-            var  students= await(studentRepository.GetStudentsAsync());
-           
-            /*var domainModelStudents = new List<Student>();
-            foreach(var student in students){
-                domainModelStudents.Add(new Student()
-                {
-                    Id=student.Id,
-                    FirstName=student.FirstName,
-                    LastName=student.LastName,
-                    DateOfBirth=student.DateOfBirth,
-                    Email=student.Email,
-                    GenderId=student.GenderId,
-                    ProfileImageUrl=student.ProfileImageUrl,
-                    Mobile=student.Mobile,
-                    Address=new Address()
-                    {
-                        Id=student.Address.Id,
-                        PhysicalAddress=student.Address.PhysicalAddress,
-                        PostalAddress=student.Address.PostalAddress,
-                    },
-                    Gender = new Gender() {
-                        Id=student.Gender.Id,
-                        Description=student.Gender.Description,
-                    }
+            var students = await studentRepository.GetStudentsAsync();
 
-                });
-            }*/
             return Ok(mapper.Map<List<Student>>(students));
         }
+
         [HttpGet]
         [Route("[controller]/{studentId:guid}")]
-        public async Task<IActionResult> GetStudentAsync([FromRoute]Guid studentId)
+        public async Task<IActionResult> GetStudentAsync([FromRoute] Guid studentId)
         {
-            //fetch stu
+            // Fetch Student Details
             var student = await studentRepository.GetStudentAsync(studentId);
+
+            // Return Student
             if (student == null)
             {
                 return NotFound();
             }
 
-            //return
             return Ok(mapper.Map<Student>(student));
-
         }
 
         [HttpPut]
-        [Route("[controller]/{studentId:Guid}")]
-        public async Task<IActionResult> UpdateStudentAsync([FromRoute]Guid studentId,[FromBody]updateStudentRequest request)
+        [Route("[controller]/{studentId:guid}")]
+        public async Task<IActionResult> UpdateStudentAsync([FromRoute] Guid studentId, [FromBody] updateStudentRequest request)
         {
-           if( await studentRepository.Exists(studentId))
+            if (await studentRepository.Exists(studentId))
             {
-                //update detail
-               var updatedStudent=await studentRepository.UpdateStudent(studentId,mapper.Map<DataModels.Student>(request));
+                // Update Details
+                var updatedStudent = await studentRepository.UpdateStudent(studentId, mapper.Map<DataModels.Student>(request));
+
                 if (updatedStudent != null)
                 {
                     return Ok(mapper.Map<Student>(updatedStudent));
                 }
             }
-            
-                return NotFound();
-            
+            return NotFound();
         }
 
         [HttpDelete]
         [Route("[controller]/{studentId:guid}")]
-        public async Task<IActionResult> DeleteStudentASyncAsync([FromRoute]Guid studentId)
+        public async Task<IActionResult> DeleteStudentAsync([FromRoute] Guid studentId)
         {
-            if(await studentRepository.Exists(studentId))
+            if (await studentRepository.Exists(studentId))
             {
-                //Delete student
-                var student=await studentRepository.DeleteStudent(studentId);
+                var student = await studentRepository.DeleteStudent(studentId);
                 return Ok(mapper.Map<Student>(student));
             }
+
             return NotFound();
         }
-    }
 
+    }
 }

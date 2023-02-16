@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using StudentAdminPortal.API.DataModels;
-using StudentAdminPortal.API.Repository;
+using StudentAdminPortal.API.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
